@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import type { Project } from "../../types/project";
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = process.env
 
 export default function AdminProjects() {
     const [projects, setProjects] = useState<Project[]>([]);

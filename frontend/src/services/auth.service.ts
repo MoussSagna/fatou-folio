@@ -7,7 +7,7 @@ interface AuthResponse {
     user: AuthUser;
 }
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = process.env
 
 export async function login(
     email: string,

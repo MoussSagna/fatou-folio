@@ -1,8 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { Router } from "express";
 
-import { db } from "../prisma/db";
-import { verifyPassword } from "../auth/password";
+import { db } from "../prisma/db.js";
+import { verifyPassword } from "../auth/password.js";
 
 const router = Router();
 

@@ -1,9 +1,13 @@
 import { Router } from "express";
 import multer from "multer";
+import type {
+  UploadApiErrorResponse,
+  UploadApiResponse,
+} from "cloudinary";
 
-import cloudinary from "../config/cloudinary";
-import { requireAuth } from "../middleware/require-auth";
-import { deleteCloudinaryImage } from "../services/cloudinary.service";
+import cloudinary from "../config/cloudinary.js";
+import { requireAuth } from "../middleware/require-auth.js";
+import { deleteCloudinaryImage } from "../services/cloudinary.service.js";
 
 const router = Router();
 
@@ -28,7 +32,9 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     try {
-      if (!req.file) {
+      const file = req.file;
+
+      if (!file) {
         res.status(400).json({
           message: "No image provided",
         });
@@ -45,7 +51,10 @@ router.post(
             folder: "fatou-portfolio",
             resource_type: "image",
           },
-          (error, uploadResult) => {
+          (
+            error: UploadApiErrorResponse | undefined,
+            uploadResult: UploadApiResponse | undefined,
+          ) => {
             if (error) {
               reject(error);
               return;
@@ -66,16 +75,6 @@ router.post(
         );
 
         stream.on("error", reject);
-        const file = req.file;
-
-        if (!file) {
-          res.status(400).json({
-            message: "No file uploaded",
-          });
-
-          return;
-        }
-
         stream.end(file.buffer);
       });
 

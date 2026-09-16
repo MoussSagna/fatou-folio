@@ -2,12 +2,12 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 
-import authRoutes from "./routes/auth.routes";
-import experienceRouter from "./routes/experience.routes";
-import profileRoutes from "./routes/profile.routes";
-import projectRoutes from "./routes/project.routes";
-import skillRouter from "./routes/skill.routes";
-import uploadRoutes from "./routes/upload.routes";
+import authRoutes from "./routes/auth.routes.js";
+import experienceRouter from "./routes/experience.routes.js";
+import profileRoutes from "./routes/profile.routes.js";
+import projectRoutes from "./routes/project.routes.js";
+import skillRouter from "./routes/skill.routes.js";
+import uploadRoutes from "./routes/upload.routes.js";
 
 const app = express();
 

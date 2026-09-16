@@ -1,6 +1,6 @@
 import type { Skill } from "../types/";
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = process.env
 
 export interface SkillInput {
     number: string;

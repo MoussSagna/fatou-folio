@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 
-import { db } from "../prisma/db";
+import { db } from "../prisma/db.js";
 
 export interface AuthenticatedRequest extends Request {
   userId?: number;

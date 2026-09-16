@@ -1,8 +1,8 @@
 import { Router } from "express";
 
-import { requireAuth } from "../middleware/require-auth";
-import { db } from "../prisma/db";
-import { deleteCloudinaryImage } from "../services/cloudinary.service";
+import { requireAuth } from "../middleware/require-auth.js";
+import { db } from "../prisma/db.js";
+import { deleteCloudinaryImage } from "../services/cloudinary.service.js";
 
 const router = Router();
 

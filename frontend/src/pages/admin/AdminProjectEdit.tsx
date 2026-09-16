@@ -10,7 +10,7 @@ import type {
     ProjectSection,
 } from "../../types/";
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = process.env
 
 interface AdminProjectImage extends Omit<ProjectImage, "id"> {
     id: string | number;

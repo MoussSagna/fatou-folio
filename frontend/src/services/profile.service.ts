@@ -1,6 +1,6 @@
 import type { Profile } from "../types/";
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = process.env
 
 export async function getProfile(): Promise<Profile> {
     const response = await fetch(`${API_URL}/profile`);
