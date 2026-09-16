@@ -1,6 +1,6 @@
 import type { Profile } from "../types/";
 
-const API_URL = process.env
+const API_URL = import.meta.env.VITE_API_URL;
 
 export async function getProfile(): Promise<Profile> {
     const response = await fetch(`${API_URL}/profile`);

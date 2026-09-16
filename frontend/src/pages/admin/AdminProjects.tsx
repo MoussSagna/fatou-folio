@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import type { Project } from "../../types/project";
 
-const API_URL = process.env
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function AdminProjects() {
     const [projects, setProjects] = useState<Project[]>([]);

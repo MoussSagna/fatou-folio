@@ -13,7 +13,7 @@ export default function ProtectedRoute() {
                     <div className="h-8 w-8 animate-spin rounded-full border border-white/20 border-t-white" />
 
                     <p className="text-xs uppercase tracking-[0.25em] text-white/30">
-                        Loading
+                        Chargement..
                     </p>
                 </div>
             </main>

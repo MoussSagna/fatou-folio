@@ -1,6 +1,6 @@
 import type { Skill } from "../types/";
 
-const API_URL = process.env
+const API_URL = import.meta.env.VITE_API_URL;
 
 export interface SkillInput {
     number: string;
