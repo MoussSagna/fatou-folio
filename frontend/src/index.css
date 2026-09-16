@@ -2,20 +2,76 @@
 
 :root {
   font-family: Inter, system-ui, sans-serif;
+  --color-primary: #d5b5ff;
+  --color-primary-strong: #c38dff;
+  --color-primary-soft: rgba(213, 181, 255, 0.18);
+  --color-button-text: #111111;
   background: #111111;
   color: white;
-}
-
-* {
-  box-sizing: border-box;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+html[data-theme="midnight"] {
+  --color-primary: #d5b5ff;
+  --color-primary-strong: #c38dff;
+  --color-primary-soft: rgba(213, 181, 255, 0.18);
+}
+
+html[data-theme="rose"] {
+  --color-primary: #f9a8d4;
+  --color-primary-strong: #f472b6;
+  --color-primary-soft: rgba(249, 168, 212, 0.18);
+}
+
+html[data-theme="violet"] {
+  --color-primary: #a78bfa;
+  --color-primary-strong: #8b5cf6;
+  --color-primary-soft: rgba(167, 139, 250, 0.18);
+}
+
+html[data-theme="blue"] {
+  --color-primary: #7dd3fc;
+  --color-primary-strong: #38bdf8;
+  --color-primary-soft: rgba(125, 211, 252, 0.18);
+}
+
+html[data-theme="green"] {
+  --color-primary: #86efac;
+  --color-primary-strong: #4ade80;
+  --color-primary-soft: rgba(134, 239, 172, 0.18);
+}
+
+html[data-theme="orange"] {
+  --color-primary: #fbbf24;
+  --color-primary-strong: #f59e0b;
+  --color-primary-soft: rgba(251, 191, 36, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   min-width: 320px;
   background: #111111;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+button,
+a {
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease,
+    opacity 180ms ease;
+}
+
+::selection {
+  background: var(--color-primary-soft);
+  color: white;
 }

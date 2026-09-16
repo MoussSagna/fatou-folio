@@ -59,7 +59,11 @@ export default function ProjectCard({
                             duration: 0.4,
                             ease: [0.22, 1, 0.36, 1],
                         }}
-                        className="absolute bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-white text-xl text-black"
+                        className="absolute bottom-6 right-6 flex h-14 w-14 items-center justify-center rounded-full text-xl"
+                        style={{
+                            backgroundColor: "var(--color-primary)",
+                            color: "var(--color-button-text)",
+                        }}
                     >
                         ↗
                     </motion.div>

@@ -15,7 +15,10 @@ export default function AboutSection() {
                 <div className="grid gap-16 md:grid-cols-[1fr_3fr]">
                     <Reveal>
                         <div className="flex items-start gap-3">
-                            <span className="mt-1 h-2 w-2 rounded-full bg-white" />
+                            <span
+                                className="mt-1 h-2 w-2 rounded-full"
+                                style={{ backgroundColor: "var(--color-primary)" }}
+                            />
 
                             <p className="text-xs uppercase tracking-[0.3em] text-white/40 md:text-sm">
                                 {loading

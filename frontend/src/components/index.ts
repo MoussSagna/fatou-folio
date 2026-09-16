@@ -10,6 +10,7 @@ import {Navbar} from "./layout/Navbar.tsx";
 import ScrollToHash from "./layout/ScrollToHash.tsx";
 import RouterLayout from "./layout/RouterLayout.tsx";
 import AnimatedLoader from "./animations/AnimatedLoader.tsx";
+import { ThemeSelector } from "./theme/ThemeSelector";
 
 export {
     Reveal,
@@ -19,5 +20,6 @@ export {
     ContactSection,
     Footer, Navbar,
     ScrollToHash, RouterLayout,
-    AnimatedLoader
+    AnimatedLoader,
+    ThemeSelector,
 }

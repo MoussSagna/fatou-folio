@@ -23,7 +23,10 @@ export default function ContactSection() {
             <div className="mx-auto max-w-[1600px]">
                 <Reveal>
                     <div className="flex items-start gap-3">
-                        <span className="mt-1 h-2 w-2 rounded-full bg-white" />
+                        <span
+                            className="mt-1 h-2 w-2 rounded-full"
+                            style={{ backgroundColor: "var(--color-primary)" }}
+                        />
 
                         <p className="text-xs uppercase tracking-[0.3em] text-white/40 md:text-sm">
                             {loading
@@ -69,7 +72,11 @@ export default function ContactSection() {
                                 stiffness: 250,
                                 damping: 20,
                             }}
-                            className="group flex h-36 w-36 shrink-0 items-center justify-center rounded-full bg-white text-center text-sm font-medium uppercase tracking-[0.1em] text-black md:h-48 md:w-48"
+                            className="group flex h-36 w-36 shrink-0 items-center justify-center rounded-full text-center text-sm font-medium uppercase tracking-[0.1em] md:h-48 md:w-48"
+                            style={{
+                                backgroundColor: "var(--color-primary)",
+                                color: "var(--color-button-text)",
+                            }}
                         >
                             <span>
                                 {profile?.contactCtaText ||

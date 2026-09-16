@@ -40,7 +40,10 @@ export default function Home() {
                     <div className="relative">
                         <Reveal>
                             <div className="mb-10 flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-white/40 md:text-sm">
-                                <span className="h-2 w-2 rounded-full bg-white" />
+                                <span
+                                    className="h-2 w-2 rounded-full"
+                                    style={{ backgroundColor: "var(--color-primary)" }}
+                                />
 
                                 <span>
                                     {profile?.title ||
@@ -136,7 +139,12 @@ export default function Home() {
                                             whileTap={{
                                                 scale: 0.95,
                                             }}
-                                            className="flex h-16 w-16 items-center justify-center rounded-full border border-white/20 text-xl transition-colors duration-300 group-hover:border-white group-hover:bg-white group-hover:text-black"
+                                            className="flex h-16 w-16 items-center justify-center rounded-full border text-xl transition-colors duration-300 group-hover:border-white"
+                                            style={{
+                                                borderColor: "var(--color-primary)",
+                                                backgroundColor: "var(--color-primary)",
+                                                color: "var(--color-button-text)",
+                                            }}
                                         >
                                             ↗
                                         </motion.span>
