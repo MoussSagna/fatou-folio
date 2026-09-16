@@ -1,0 +1,340 @@
+[
+  {
+    "id": "schema.public",
+    "label": "Create schema \"public\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "Create schema \"public\"",
+        "sql": "CREATE SCHEMA IF NOT EXISTS \"public\"",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "table.project",
+    "label": "Create table \"project\"",
+    "summary": "Creates table \"project\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "project"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"project\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"project\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"project\"",
+        "sql": "CREATE TABLE \"public\".\"project\" (\n  \"category\" text NOT NULL,\n  \"client\" text,\n  \"coverImage\" text NOT NULL,\n  \"createdAt\" timestamptz DEFAULT (now()) NOT NULL,\n  \"deliverables\" text[] NOT NULL,\n  \"description\" text NOT NULL,\n  \"featured\" bool DEFAULT false NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"order\" int4 DEFAULT 0 NOT NULL,\n  \"published\" bool DEFAULT false NOT NULL,\n  \"role\" text,\n  \"slug\" text NOT NULL,\n  \"title\" text NOT NULL,\n  \"tools\" text[] NOT NULL,\n  \"updatedAt\" timestamptz NOT NULL,\n  \"year\" int4,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"project_deliverables_elem_not_null_6db7519b\" CHECK (array_position(\"deliverables\", NULL) IS NULL),\n  CONSTRAINT \"project_tools_elem_not_null_89bdc909\" CHECK (array_position(\"tools\", NULL) IS NULL)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"project\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"project\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.projectImage",
+    "label": "Create table \"projectImage\"",
+    "summary": "Creates table \"projectImage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "projectImage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"projectImage\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"projectImage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"projectImage\"",
+        "sql": "CREATE TABLE \"public\".\"projectImage\" (\n  \"alt\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"order\" int4 DEFAULT 0 NOT NULL,\n  \"projectId\" int4 NOT NULL,\n  \"url\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"projectImage\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"projectImage\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.projectSection",
+    "label": "Create table \"projectSection\"",
+    "summary": "Creates table \"projectSection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "table",
+        "name": "projectSection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"projectSection\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"projectSection\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"projectSection\"",
+        "sql": "CREATE TABLE \"public\".\"projectSection\" (\n  \"content\" text NOT NULL,\n  \"id\" SERIAL NOT NULL,\n  \"number\" text NOT NULL,\n  \"order\" int4 DEFAULT 0 NOT NULL,\n  \"projectId\" int4 NOT NULL,\n  \"title\" text NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"projectSection\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"projectSection\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.project.project_slug_key",
+    "label": "Add unique constraint on \"project\" (slug)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "unique",
+        "name": "project_slug_key",
+        "table": "project"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"project_slug_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "project_slug_key",
+          "public",
+          "\"public\".\"project\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"project_slug_key\"",
+        "sql": "ALTER TABLE \"public\".\"project\" ADD CONSTRAINT \"project_slug_key\" UNIQUE (\"slug\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"project_slug_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "project_slug_key",
+          "public",
+          "\"public\".\"project\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.projectImage.projectImage_projectId_idx_a96e4d92",
+    "label": "Create index \"projectImage_projectId_idx_a96e4d92\" on \"projectImage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "projectImage_projectId_idx_a96e4d92",
+        "table": "projectImage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"projectImage_projectId_idx_a96e4d92\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"projectImage_projectId_idx_a96e4d92\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"projectImage_projectId_idx_a96e4d92\"",
+        "sql": "CREATE INDEX \"projectImage_projectId_idx_a96e4d92\" ON \"public\".\"projectImage\" (\"projectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"projectImage_projectId_idx_a96e4d92\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"projectImage_projectId_idx_a96e4d92\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.projectSection.projectSection_projectId_idx_a96e4d92",
+    "label": "Create index \"projectSection_projectId_idx_a96e4d92\" on \"projectSection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "index",
+        "name": "projectSection_projectId_idx_a96e4d92",
+        "table": "projectSection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"projectSection_projectId_idx_a96e4d92\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"public\".\"projectSection_projectId_idx_a96e4d92\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"projectSection_projectId_idx_a96e4d92\"",
+        "sql": "CREATE INDEX \"projectSection_projectId_idx_a96e4d92\" ON \"public\".\"projectSection\" (\"projectId\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"projectSection_projectId_idx_a96e4d92\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"public\".\"projectSection_projectId_idx_a96e4d92\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.projectImage.projectImage_projectId_fkey",
+    "label": "Add foreign key \"projectImage_projectId_fkey\" on \"projectImage\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "projectImage_projectId_fkey",
+        "table": "projectImage"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"projectImage_projectId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "projectImage_projectId_fkey",
+          "public",
+          "\"public\".\"projectImage\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"projectImage_projectId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"projectImage\"\nADD CONSTRAINT \"projectImage_projectId_fkey\"\nFOREIGN KEY (\"projectId\")\nREFERENCES \"public\".\"project\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"projectImage_projectId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "projectImage_projectId_fkey",
+          "public",
+          "\"public\".\"projectImage\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.projectSection.projectSection_projectId_fkey",
+    "label": "Add foreign key \"projectSection_projectId_fkey\" on \"projectSection\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "public",
+        "objectType": "foreignKey",
+        "name": "projectSection_projectId_fkey",
+        "table": "projectSection"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"projectSection_projectId_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "projectSection_projectId_fkey",
+          "public",
+          "\"public\".\"projectSection\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"projectSection_projectId_fkey\"",
+        "sql": "ALTER TABLE \"public\".\"projectSection\"\nADD CONSTRAINT \"projectSection_projectId_fkey\"\nFOREIGN KEY (\"projectId\")\nREFERENCES \"public\".\"project\" (\"id\")\nON DELETE CASCADE"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"projectSection_projectId_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "projectSection_projectId_fkey",
+          "public",
+          "\"public\".\"projectSection\""
+        ]
+      }
+    ]
+  }
+]

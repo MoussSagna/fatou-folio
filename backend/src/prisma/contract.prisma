@@ -1,0 +1,121 @@
+// use prisma-8
+model Profile {
+  id                   Int      @id @default(1)
+  name                 String
+  title                String
+  bio                  String
+  profileImage         String?
+  profileImagePublicId String?
+  location             String?
+  contactEmail         String?
+  instagram            String?
+  linkedin             String?
+  behance              String?
+  dribbble             String?
+  cvUrl                String?
+
+  heroAvailabilityText     String?
+  heroCtaText              String?
+  aboutLabel               String?
+  aboutSecondaryText       String?
+  aboutCtaText             String?
+  skillsLabel              String?
+  skillsHeading            String?
+  experienceLabel          String?
+  experienceHeading       String?
+  contactLabel             String?
+  contactHeading           String?
+  contactAvailabilityText  String?
+  contactCtaText           String?
+  footerAvailabilityText   String?
+
+  skills               Skill[]
+  experiences          Experience[]
+  createdAt            TimestamptzString @default(now())
+  updatedAt            temporal.updatedAtString()
+}
+model Project {
+  id             Int             @id @default(autoincrement())
+  title          String
+  slug           String          @unique
+  description    String
+  client         String?
+  role           String?
+  year           Int?
+  category       String
+  coverImage     String
+  coverPublicId  String?
+  tools          String[]
+  deliverables   String[]
+  published      Boolean         @default(false)
+  featured       Boolean         @default(false)
+  order          Int             @default(0)
+  sections       ProjectSection[]
+  images         ProjectImage[]
+  createdAt      TimestamptzString @default(now())
+  updatedAt      temporal.updatedAtString()
+}
+
+model ProjectSection {
+  id        Int      @id @default(autoincrement())
+  number    String
+  title     String
+  content   String
+  order     Int      @default(0)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId Int
+}
+
+model ProjectImage {
+  id        Int      @id @default(autoincrement())
+  url       String
+  publicId  String?
+  alt       String
+  order     Int      @default(0)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId Int
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  passwordHash String
+  sessions     Session[]
+  createdAt    TimestamptzString @default(now())
+  updatedAt    temporal.updatedAtString()
+}
+
+model Session {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  expiresAt TimestamptzString
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  createdAt TimestamptzString @default(now())
+}
+
+model Skill {
+  id          Int      @id @default(autoincrement())
+  number      String
+  title       String
+  description String
+  order       Int      @default(0)
+  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId   Int
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+}
+
+model Experience {
+  id          Int      @id @default(autoincrement())
+  period      String
+  company     String
+  role        String
+  location    String?
+  description String
+  order       Int      @default(0)
+  profile     Profile  @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  profileId   Int
+  createdAt   TimestamptzString @default(now())
+  updatedAt   temporal.updatedAtString()
+}
