@@ -87,7 +87,7 @@ router.get("/", async (_req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to fetch profile",
+      message: "Impossible de récupérer le profil.",
     });
   }
 });
@@ -129,7 +129,7 @@ router.put("/", requireAuth, async (req, res) => {
       typeof bio !== "string"
     ) {
       res.status(400).json({
-        message: "Invalid profile data",
+        message: "Les données du profil sont invalides.",
       });
 
       return;
@@ -221,7 +221,7 @@ router.put("/", requireAuth, async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to update profile",
+      message: "Impossible de mettre à jour le profil.",
     });
   }
 });

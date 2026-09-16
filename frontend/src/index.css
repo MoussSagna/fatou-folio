@@ -75,3 +75,51 @@ a {
   background: var(--color-primary-soft);
   color: white;
 }
+
+.editor-input {
+  width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.75rem;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.65rem 0.75rem;
+  color: white;
+  outline: none;
+}
+
+.editor-input:focus {
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.editor-primary-button,
+.editor-secondary-button,
+.editor-link-button,
+.editor-delete-button {
+  border-radius: 9999px;
+  padding: 0.55rem 0.8rem;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: opacity 180ms ease, border-color 180ms ease;
+}
+
+.editor-primary-button {
+  background: white;
+  color: #111111;
+}
+
+.editor-secondary-button,
+.editor-link-button {
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.editor-delete-button {
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: rgb(252, 165, 165);
+}
+
+.editor-primary-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

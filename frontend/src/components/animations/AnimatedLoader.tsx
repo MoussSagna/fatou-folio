@@ -23,7 +23,7 @@ const AnimatedLoader = () => {
                         ease: "easeInOut",
                     }}
                 >
-                    Loading
+                    Chargement
                 </motion.p>
             </div>
         </main>

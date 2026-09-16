@@ -1,9 +1,17 @@
 import { motion } from "motion/react";
 
 import { useProfile } from "../../hooks";
+import type { Profile } from "../../types";
 
-export default function Footer() {
-    const { profile, loading } = useProfile();
+interface FooterProps {
+    profile?: Profile | null;
+    loading?: boolean;
+}
+
+export default function Footer({ profile: profileProp, loading: loadingProp }: FooterProps) {
+    const { profile: hookProfile, loading: hookLoading } = useProfile();
+    const profile = profileProp ?? hookProfile;
+    const loading = loadingProp ?? hookLoading;
 
     const socialLinks = [
         {

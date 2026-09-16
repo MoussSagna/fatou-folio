@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ElementType } from "react";
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 
@@ -9,31 +9,182 @@ import {
     Footer,
     Navbar,
     Reveal,
-    SelectedWork,
     SkillsSection,
 } from "../../components";
-import { getProfile } from "../../services";
+import { useAuth } from "../../context/AuthContext";
+import { getProfile, updateProfile } from "../../services";
 import type { Profile } from "../../types/";
 
+interface EditableTextProps {
+    label: string;
+    value: string | null | undefined;
+    onChange: (value: string) => void;
+    isEditing: boolean;
+    placeholder?: string;
+    multiline?: boolean;
+    className?: string;
+    as?: ElementType;
+}
+
+function EditableText({
+    label,
+    value,
+    onChange,
+    isEditing,
+    placeholder = "",
+    multiline = false,
+    className = "",
+    as: Component = "span",
+}: EditableTextProps) {
+    const resolvedValue = value?.trim() ? value : placeholder;
+
+    if (!isEditing) {
+        return <Component className={className}>{resolvedValue}</Component>;
+    }
+
+    const sharedClassName =
+        "w-full rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:border-white/40 focus:outline-none";
+
+    if (multiline) {
+        return (
+            <textarea
+                aria-label={label}
+                value={value ?? ""}
+                onChange={(event) => onChange(event.target.value)}
+                placeholder={placeholder}
+                className={`${sharedClassName} min-h-[120px] ${className}`}
+            />
+        );
+    }
+
+    return (
+        <input
+            aria-label={label}
+            type="text"
+            value={value ?? ""}
+            onChange={(event) => onChange(event.target.value)}
+            placeholder={placeholder}
+            className={`${sharedClassName} ${className}`}
+        />
+    );
+}
+
 export default function Home() {
+    const { user } = useAuth();
     const [profile, setProfile] = useState<Profile | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [isEditing, setIsEditing] = useState(false);
+    const [saving, setSaving] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const loadProfile = async () => {
             try {
+                setLoading(true);
                 const data = await getProfile();
+
                 setProfile(data);
-            } catch (error) {
-                console.error(error);
+            } catch (requestError) {
+                console.error(requestError);
+                setError("Impossible de charger le profil.");
+            } finally {
+                setLoading(false);
             }
         };
 
         void loadProfile();
     }, []);
 
+    const updateField = <K extends keyof Profile>(
+        field: K,
+        value: Profile[K],
+    ) => {
+        setProfile((current) => {
+            if (!current) {
+                return current;
+            }
+
+            return {
+                ...current,
+                [field]: value,
+            };
+        });
+    };
+
+    const handleSave = async () => {
+        if (!profile) {
+            return;
+        }
+
+        try {
+            setSaving(true);
+            setError(null);
+            const updatedProfile = await updateProfile(profile);
+
+            setProfile(updatedProfile);
+            setIsEditing(false);
+        } catch (requestError) {
+            console.error(requestError);
+            setError("Impossible d'enregistrer les modifications.");
+        } finally {
+            setSaving(false);
+        }
+    };
+
     return (
         <main className="overflow-hidden bg-[#111111] text-white">
-            <Navbar />
+            <Navbar
+            />
+
+            {user && !isEditing && (
+                <button
+                    type="button"
+                    onClick={() => setIsEditing(true)}
+                    className="fixed bottom-6 right-6 z-40 rounded-full border border-white/15 bg-[#161616]/95 px-4 py-3 text-[10px] font-medium uppercase tracking-[0.2em] text-white/80 shadow-2xl backdrop-blur-md transition hover:border-white/30 hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+                >
+                    Modifier le site
+                </button>
+            )}
+
+            {isEditing && (
+                <motion.aside
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="fixed bottom-6 right-6 z-40 w-[320px] rounded-2xl border border-white/10 bg-[#161616]/95 p-4 shadow-2xl backdrop-blur-md"
+                    aria-label="Éditeur du site"
+                >
+                    <p className="text-[10px] uppercase tracking-[0.25em] text-white/40">
+                        Mode édition
+                    </p>
+
+                    <p className="mt-2 text-sm text-white/80">
+                        Modifiez le contenu visible sur la page publique.
+                    </p>
+
+                    <div className="mt-4 flex items-center gap-2">
+                        <button
+                            type="button"
+                            onClick={handleSave}
+                            disabled={saving}
+                            className="flex-1 rounded-full bg-white px-3 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            {saving ? "Sauvegarde..." : "Enregistrer"}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => setIsEditing(false)}
+                            className="rounded-full border border-white/15 bg-white/5 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.2em] text-white/70 transition hover:border-white/30"
+                        >
+                            Fermer
+                        </button>
+                    </div>
+
+                    {error && (
+                        <p className="mt-3 text-xs text-red-300">{error}</p>
+                    )}
+                </motion.aside>
+            )}
 
             <section className="relative flex min-h-screen items-end px-6 pb-12 pt-32 md:px-12 md:pb-16">
                 <div className="mx-auto w-full max-w-[1600px]">
@@ -45,18 +196,29 @@ export default function Home() {
                                     style={{ backgroundColor: "var(--color-primary)" }}
                                 />
 
-                                <span>
-                                    {profile?.title ||
-                                        "UI/UX Designer · Product Designer"}
-                                </span>
+                                <EditableText
+                                    label="Titre professionnel"
+                                    value={profile?.title}
+                                    isEditing={Boolean(user) && isEditing}
+                                    onChange={(value) => updateField("title", value)}
+                                    placeholder="UI/UX Designer · Product Designer"
+                                    className="text-inherit"
+                                    as="span"
+                                />
                             </div>
                         </Reveal>
 
                         <div className="relative">
                             <Reveal delay={0.1}>
-                                <h1 className="text-[18vw] font-medium uppercase leading-[0.72] tracking-[-0.09em] md:text-[15vw]">
-                                    {profile?.name || "Fatou"}
-                                </h1>
+                                <EditableText
+                                    label="Nom"
+                                    value={profile?.name}
+                                    isEditing={Boolean(user) && isEditing}
+                                    onChange={(value) => updateField("name", value)}
+                                    placeholder="Fatou"
+                                    className="block text-[18vw] font-medium uppercase leading-[0.72] tracking-[-0.09em] md:text-[15vw]"
+                                    as="h1"
+                                />
                             </Reveal>
 
                             <Reveal delay={0.2}>
@@ -90,10 +252,7 @@ export default function Home() {
                                 {profile?.profileImage && (
                                     <img
                                         src={profile.profileImage}
-                                        alt={
-                                            profile.name ||
-                                            "Designer"
-                                        }
+                                        alt={profile.name || "Designer"}
                                         className="h-full w-full object-cover"
                                     />
                                 )}
@@ -103,25 +262,46 @@ export default function Home() {
                         <div className="mt-16 grid gap-10 md:grid-cols-2 md:items-end">
                             <Reveal delay={0.3}>
                                 <div className="max-w-md">
-                                    <p className="text-base leading-relaxed text-white/50 md:text-lg">
-                                        {profile?.bio ||
-                                            "Je conçois des expériences numériques qui associent clarté, émotion et interactions pertinentes."}
-                                    </p>
+                                    <EditableText
+                                        label="Bio"
+                                        value={profile?.bio}
+                                        isEditing={Boolean(user) && isEditing}
+                                        onChange={(value) => updateField("bio", value)}
+                                        placeholder="Je conçois des expériences numériques qui allient clarté, émotion et interactions significatives."
+                                        className="block text-base leading-relaxed text-white/50 md:text-lg"
+                                        as="p"
+                                        multiline
+                                    />
 
                                     <div className="mt-6 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30">
                                         {profile?.location && (
                                             <>
-                                                <span>
-                                                    {profile.location}
-                                                </span>
+                                                <EditableText
+                                                    label="Localisation"
+                                                    value={profile.location}
+                                                    isEditing={Boolean(user) && isEditing}
+                                                    onChange={(value) =>
+                                                        updateField("location", value)
+                                                    }
+                                                    placeholder="Paris"
+                                                    className="text-inherit"
+                                                    as="span"
+                                                />
                                                 <span>·</span>
                                             </>
                                         )}
 
-                                        <span>
-                                            {profile?.heroAvailabilityText ||
-                                                "Disponible pour des projets"}
-                                        </span>
+                                        <EditableText
+                                            label="Disponibilité"
+                                            value={profile?.heroAvailabilityText}
+                                            isEditing={Boolean(user) && isEditing}
+                                            onChange={(value) =>
+                                                updateField("heroAvailabilityText", value)
+                                            }
+                                            placeholder="Disponible pour des projets"
+                                            className="text-inherit"
+                                            as="span"
+                                        />
                                     </div>
                                 </div>
                             </Reveal>
@@ -149,10 +329,17 @@ export default function Home() {
                                             ↗
                                         </motion.span>
 
-                                        <span className="text-sm uppercase tracking-[0.2em] text-white/50 transition-colors duration-300 group-hover:text-white">
-                                            {profile?.heroCtaText ||
-                                                "Voir mes projets"}
-                                        </span>
+                                        <EditableText
+                                            label="Bouton d'action principal"
+                                            value={profile?.heroCtaText}
+                                            isEditing={Boolean(user) && isEditing}
+                                            onChange={(value) =>
+                                                updateField("heroCtaText", value)
+                                            }
+                                            placeholder="Voir mes projets"
+                                            className="text-sm uppercase tracking-[0.2em] text-white/50 transition-colors duration-300 group-hover:text-white"
+                                            as="span"
+                                        />
                                     </Link>
                                 </div>
                             </Reveal>
@@ -169,17 +356,32 @@ export default function Home() {
                     }}
                     className="absolute bottom-8 right-6 hidden items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/30 md:right-12 md:flex"
                 >
-                    <span>Scroll to explore</span>
-                    <span className="text-base">↓</span>
+                    <span>Faites défiler pour découvrir</span>
+                    <span className="text-base text-white/40">↓</span>
                 </motion.div>
             </section>
 
-            <SelectedWork />
-            <AboutSection />
-            <SkillsSection />
-            <ExperienceSection />
-            <ContactSection />
-            <Footer />
+            <AboutSection
+                profile={profile}
+                loading={loading}
+                isEditing={isEditing}
+                onFieldChange={updateField}
+            />
+            <SkillsSection
+                profile={profile}
+                isEditing={Boolean(user) && isEditing}
+            />
+            <ExperienceSection
+                profile={profile}
+                isEditing={Boolean(user) && isEditing}
+            />
+            <ContactSection
+                profile={profile}
+                loading={loading}
+                isEditing={isEditing}
+                onFieldChange={updateField}
+            />
+            <Footer profile={profile} loading={loading} />
         </main>
     );
 }

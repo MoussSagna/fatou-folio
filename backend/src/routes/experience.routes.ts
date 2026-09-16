@@ -29,7 +29,7 @@ router.get("/", async (_req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to fetch experiences",
+      message: "Impossible de récupérer les expériences.",
     });
   }
 });
@@ -49,10 +49,16 @@ router.post("/", requireAuth, async (req, res) => {
       typeof period !== "string" ||
       typeof company !== "string" ||
       typeof role !== "string" ||
-      typeof description !== "string"
+      typeof description !== "string" ||
+      !period.trim() ||
+      !company.trim() ||
+      !role.trim() ||
+      !description.trim() ||
+      (order !== undefined &&
+        (!Number.isInteger(order) || order < 0))
     ) {
       res.status(400).json({
-        message: "Invalid experience data",
+        message: "Les données de l’expérience sont invalides.",
       });
 
       return;
@@ -74,7 +80,7 @@ router.post("/", requireAuth, async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to create experience",
+      message: "Impossible de créer l’expérience.",
     });
   }
 });
@@ -85,7 +91,7 @@ router.put("/:id", requireAuth, async (req, res) => {
 
     if (!Number.isInteger(id)) {
       res.status(400).json({
-        message: "Invalid experience id",
+        message: "Identifiant d’expérience invalide.",
       });
 
       return;
@@ -104,10 +110,16 @@ router.put("/:id", requireAuth, async (req, res) => {
       typeof period !== "string" ||
       typeof company !== "string" ||
       typeof role !== "string" ||
-      typeof description !== "string"
+      typeof description !== "string" ||
+      !period.trim() ||
+      !company.trim() ||
+      !role.trim() ||
+      !description.trim() ||
+      (order !== undefined &&
+        (!Number.isInteger(order) || order < 0))
     ) {
       res.status(400).json({
-        message: "Invalid experience data",
+        message: "Les données de l’expérience sont invalides.",
       });
 
       return;
@@ -125,7 +137,7 @@ router.put("/:id", requireAuth, async (req, res) => {
 
     if (!experience) {
       res.status(404).json({
-        message: "Experience not found",
+        message: "Expérience introuvable.",
       });
 
       return;
@@ -158,7 +170,7 @@ router.put("/:id", requireAuth, async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to update experience",
+      message: "Impossible de mettre à jour l’expérience.",
     });
   }
 });
@@ -169,7 +181,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
 
     if (!Number.isInteger(id)) {
       res.status(400).json({
-        message: "Invalid experience id",
+        message: "Identifiant d’expérience invalide.",
       });
 
       return;
@@ -187,7 +199,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
 
     if (!experience) {
       res.status(404).json({
-        message: "Experience not found",
+        message: "Expérience introuvable.",
       });
 
       return;
@@ -205,7 +217,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to delete experience",
+      message: "Impossible de supprimer l’expérience.",
     });
   }
 });

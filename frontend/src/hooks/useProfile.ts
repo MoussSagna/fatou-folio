@@ -22,7 +22,7 @@ export function useProfile(): UseProfileResult {
                 setProfile(data);
             } catch (error) {
                 console.error(error);
-                setError("Unable to fetch profile");
+                setError("Impossible de récupérer le profil.");
             } finally {
                 setLoading(false);
             }

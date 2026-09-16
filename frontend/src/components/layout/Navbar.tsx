@@ -1,7 +1,6 @@
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 
-import { ThemeSelector } from "../theme/ThemeSelector";
 import { useProfile } from "../../hooks";
 
 const navItems = [
@@ -12,7 +11,6 @@ const navItems = [
 
 export function Navbar() {
   const { profile, loading } = useProfile();
-
   const initial = profile?.name?.charAt(0) || "F";
 
   return (
@@ -64,10 +62,6 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div>
-            <ThemeSelector />
-          </div>
-
           <motion.div
             initial={{
               opacity: 0,
@@ -91,7 +85,7 @@ export function Navbar() {
                 backgroundColor: "transparent",
               }}
             >
-              <span>{profile?.heroCtaText || "Parlons-en"}</span>
+              <span>{profile?.heroCtaText || "Me contacter"}</span>
               <span>↗</span>
             </Link>
           </motion.div>

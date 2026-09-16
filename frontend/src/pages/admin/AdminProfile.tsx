@@ -15,8 +15,11 @@ import {
     updateSkill,
     uploadImage,
 } from "../../services";
+import { ExperiencesManager } from "../../components/admin/ExperiencesManager";
+import { SkillsManager } from "../../components/admin/SkillsManager";
 import type { Experience, Profile, Skill } from "../../types";
 import { useAuth } from "../../context/AuthContext";
+
 const emptyProfile: Profile = {
     id: 1,
     name: "",
@@ -47,6 +50,7 @@ const emptyProfile: Profile = {
     footerAvailabilityText: null,
     skills: [],
 };
+
 const emptySkill = {
     number: "",
     title: "",
@@ -76,7 +80,6 @@ export default function AdminProfile() {
 
     const [editingSkillId, setEditingSkillId] =
         useState<number | null>(null);
-
     const [editingExperienceId, setEditingExperienceId] =
         useState<number | null>(null);
 
@@ -85,7 +88,6 @@ export default function AdminProfile() {
     const [savingSkill, setSavingSkill] = useState(false);
     const [savingExperience, setSavingExperience] =
         useState(false);
-
     const [uploadingImage, setUploadingImage] = useState(false);
     const [message, setMessage] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -96,24 +98,19 @@ export default function AdminProfile() {
                 setLoading(true);
                 setError(null);
 
-                const [
-                    profileData,
-                    skillsData,
-                    experiencesData,
-                ] = await Promise.all([
-                    getProfile(),
-                    getSkills(),
-                    getExperiences(),
-                ]);
+                const [profileData, skillsData, experiencesData] =
+                    await Promise.all([
+                        getProfile(),
+                        getSkills(),
+                        getExperiences(),
+                    ]);
 
                 setProfile(profileData);
                 setSkills(skillsData);
                 setExperiences(experiencesData);
             } catch (error) {
                 console.error(error);
-                setError(
-                    "Impossible de charger les données du profil.",
-                );
+                setError("Impossible de charger les données du profil.");
             } finally {
                 setLoading(false);
             }
@@ -126,10 +123,7 @@ export default function AdminProfile() {
         field: keyof Profile,
         value: string,
     ) => {
-        setProfile((current) => ({
-            ...current,
-            [field]: value,
-        }));
+        setProfile((current) => ({ ...current, [field]: value }));
     };
 
     const handleProfileSubmit = async (
@@ -141,9 +135,7 @@ export default function AdminProfile() {
             setSavingProfile(true);
             setMessage(null);
             setError(null);
-
             const updatedProfile = await updateProfile(profile);
-
             setProfile(updatedProfile);
             setMessage("Profil enregistré.");
         } catch (error) {
@@ -167,15 +159,12 @@ export default function AdminProfile() {
             setUploadingImage(true);
             setMessage(null);
             setError(null);
-
             const result = await uploadImage(file);
-
             setProfile((current) => ({
                 ...current,
                 profileImage: result.url,
                 profileImagePublicId: result.publicId,
             }));
-
             setMessage("Photo de profil téléchargée.");
         } catch (error) {
             console.error(error);
@@ -193,22 +182,18 @@ export default function AdminProfile() {
                 profileImage: null,
                 profileImagePublicId: null,
             }));
-
             return;
         }
 
         try {
             setError(null);
             setMessage(null);
-
             await deleteImage(profile.profileImagePublicId);
-
             setProfile((current) => ({
                 ...current,
                 profileImage: null,
                 profileImagePublicId: null,
             }));
-
             setMessage("Photo supprimée.");
         } catch (error) {
             console.error(error);
@@ -428,7 +413,7 @@ export default function AdminProfile() {
                 ←
             </span>
 
-                            <span>Retour au dashboard</span>
+                            <span>Retour au tableau de bord</span>
                         </Link>
                     </div>
 
@@ -982,338 +967,42 @@ export default function AdminProfile() {
                     </div>
                 </form>
 
-                <section className="mt-20 rounded-2xl border border-white/10 p-6 md:p-8">
-                    <div className="mb-10 flex items-end justify-between gap-6">
-                        <div>
-                            <p className="mb-3 text-xs uppercase tracking-[0.25em] text-white/30">
-                                Compétences
-                            </p>
+                <SkillsManager
+                    skills={skills}
+                    skillForm={skillForm}
+                    editingSkillId={editingSkillId}
+                    saving={savingSkill}
+                    onChange={(field, value) =>
+                        setSkillForm((current) => ({ ...current, [field]: value }))
+                    }
+                    onSubmit={handleSkillSubmit}
+                    onEdit={handleEditSkill}
+                    onDelete={(id) => void handleDeleteSkill(id)}
+                    onCancel={() => {
+                        setEditingSkillId(null);
+                        setSkillForm(emptySkill);
+                    }}
+                />
 
-                            <h2 className="text-3xl font-medium tracking-[-0.04em]">
-                                {editingSkillId
-                                    ? "Modifier la compétence"
-                                    : "Ajouter une compétence"}
-                            </h2>
-                        </div>
-                    </div>
-
-                    <form
-                        onSubmit={handleSkillSubmit}
-                        className="grid gap-5 md:grid-cols-2"
-                    >
-                        <input
-                            placeholder="Numéro"
-                            value={skillForm.number}
-                            onChange={(event) =>
-                                setSkillForm((current) => ({
-                                    ...current,
-                                    number: event.target.value,
-                                }))
-                            }
-                            className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-white/30"
-                        />
-
-                        <input
-                            placeholder="Titre"
-                            value={skillForm.title}
-                            onChange={(event) =>
-                                setSkillForm((current) => ({
-                                    ...current,
-                                    title: event.target.value,
-                                }))
-                            }
-                            className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-white/30"
-                        />
-
-                        <textarea
-                            placeholder="Description"
-                            value={skillForm.description}
-                            onChange={(event) =>
-                                setSkillForm((current) => ({
-                                    ...current,
-                                    description: event.target.value,
-                                }))
-                            }
-                            rows={4}
-                            className="resize-y rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-white/30 md:col-span-2"
-                        />
-
-                        <input
-                            type="number"
-                            placeholder="Ordre"
-                            value={skillForm.order}
-                            onChange={(event) =>
-                                setSkillForm((current) => ({
-                                    ...current,
-                                    order: Number(event.target.value),
-                                }))
-                            }
-                            className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-white/30"
-                        />
-
-                        <div className="flex gap-3">
-                            <button
-                                type="submit"
-                                disabled={savingSkill}
-                                className="rounded-full bg-white px-6 py-3 text-sm font-medium text-black disabled:opacity-50"
-                            >
-                                {savingSkill
-                                    ? "Enregistrement..."
-                                    : editingSkillId
-                                        ? "Modifier"
-                                        : "Ajouter"}
-                            </button>
-
-                            {editingSkillId && (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setEditingSkillId(null);
-                                        setSkillForm(emptySkill);
-                                    }}
-                                    className="rounded-full border border-white/15 px-6 py-3 text-sm text-white/60"
-                                >
-                                    Annuler
-                                </button>
-                            )}
-                        </div>
-                    </form>
-
-                    <div className="mt-10 border-t border-white/10">
-                        {skills
-                            .slice()
-                            .sort((a, b) => a.order - b.order)
-                            .map((skill) => (
-                                <div
-                                    key={skill.id}
-                                    className="flex flex-col gap-5 border-b border-white/10 py-6 md:flex-row md:items-center md:justify-between"
-                                >
-                                    <div>
-                                        <p className="text-xs text-white/30">
-                                            {skill.number}
-                                        </p>
-
-                                        <h3 className="mt-1 text-xl font-medium">
-                                            {skill.title}
-                                        </h3>
-
-                                        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-white/40">
-                                            {skill.description}
-                                        </p>
-                                    </div>
-
-                                    <div className="flex shrink-0 gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleEditSkill(skill)
-                                            }
-                                            className="rounded-full border border-white/15 px-4 py-2 text-sm text-white/60 transition hover:border-white/40 hover:text-white"
-                                        >
-                                            Modifier
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                void handleDeleteSkill(skill.id)
-                                            }
-                                            className="rounded-full border border-red-400/20 px-4 py-2 text-sm text-red-300 transition hover:border-red-400/40"
-                                        >
-                                            Supprimer
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-                    </div>
-                </section>
-
-                <section className="mt-20 rounded-2xl border border-white/10 p-6 md:p-8">
-                    <div className="mb-10">
-                        <p className="mb-3 text-xs uppercase tracking-[0.25em] text-white/30">
-                            Expériences
-                        </p>
-
-                        <h2 className="text-3xl font-medium tracking-[-0.04em]">
-                            {editingExperienceId
-                                ? "Modifier l'expérience"
-                                : "Ajouter une expérience"}
-                        </h2>
-                    </div>
-
-                    <form
-                        onSubmit={handleExperienceSubmit}
-                        className="grid gap-5 md:grid-cols-2"
-                    >
-                        <input
-                            placeholder="Période"
-                            value={experienceForm.period}
-                            onChange={(event) =>
-                                setExperienceForm((current) => ({
-                                    ...current,
-                                    period: event.target.value,
-                                }))
-                            }
-                            className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-white/30"
-                        />
-
-                        <input
-                            placeholder="Entreprise"
-                            value={experienceForm.company}
-                            onChange={(event) =>
-                                setExperienceForm((current) => ({
-                                    ...current,
-                                    company: event.target.value,
-                                }))
-                            }
-                            className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-white/30"
-                        />
-
-                        <input
-                            placeholder="Poste"
-                            value={experienceForm.role}
-                            onChange={(event) =>
-                                setExperienceForm((current) => ({
-                                    ...current,
-                                    role: event.target.value,
-                                }))
-                            }
-                            className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-white/30"
-                        />
-
-                        <input
-                            placeholder="Lieu"
-                            value={experienceForm.location}
-                            onChange={(event) =>
-                                setExperienceForm((current) => ({
-                                    ...current,
-                                    location: event.target.value,
-                                }))
-                            }
-                            className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-white/30"
-                        />
-
-                        <textarea
-                            placeholder="Description"
-                            value={experienceForm.description}
-                            onChange={(event) =>
-                                setExperienceForm((current) => ({
-                                    ...current,
-                                    description: event.target.value,
-                                }))
-                            }
-                            rows={5}
-                            className="resize-y rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-white/30 md:col-span-2"
-                        />
-
-                        <input
-                            type="number"
-                            placeholder="Ordre"
-                            value={experienceForm.order}
-                            onChange={(event) =>
-                                setExperienceForm((current) => ({
-                                    ...current,
-                                    order: Number(event.target.value),
-                                }))
-                            }
-                            className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-white/30"
-                        />
-
-                        <div className="flex gap-3">
-                            <button
-                                type="submit"
-                                disabled={savingExperience}
-                                className="rounded-full bg-white px-6 py-3 text-sm font-medium text-black disabled:opacity-50"
-                            >
-                                {savingExperience
-                                    ? "Enregistrement..."
-                                    : editingExperienceId
-                                        ? "Modifier"
-                                        : "Ajouter"}
-                            </button>
-
-                            {editingExperienceId && (
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setEditingExperienceId(null);
-                                        setExperienceForm(
-                                            emptyExperience,
-                                        );
-                                    }}
-                                    className="rounded-full border border-white/15 px-6 py-3 text-sm text-white/60"
-                                >
-                                    Annuler
-                                </button>
-                            )}
-                        </div>
-                    </form>
-
-                    <div className="mt-10 border-t border-white/10">
-                        {experiences
-                            .slice()
-                            .sort((a, b) => a.order - b.order)
-                            .map((experience) => (
-                                <div
-                                    key={experience.id}
-                                    className="flex flex-col gap-5 border-b border-white/10 py-6 md:flex-row md:items-start md:justify-between"
-                                >
-                                    <div>
-                                        <p className="text-xs uppercase tracking-[0.2em] text-white/30">
-                                            {experience.period}
-                                        </p>
-
-                                        <h3 className="mt-2 text-xl font-medium">
-                                            {experience.role}
-                                        </h3>
-
-                                        <p className="mt-1 text-sm text-white/50">
-                                            {experience.company}
-                                            {experience.location
-                                                ? ` · ${experience.location}`
-                                                : ""}
-                                        </p>
-
-                                        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/40">
-                                            {experience.description}
-                                        </p>
-                                    </div>
-
-                                    <div className="flex shrink-0 gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                handleEditExperience(
-                                                    experience,
-                                                )
-                                            }
-                                            className="rounded-full border border-white/15 px-4 py-2 text-sm text-white/60 transition hover:border-white/40 hover:text-white"
-                                        >
-                                            Modifier
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            onClick={() =>
-                                                void handleDeleteExperience(
-                                                    experience.id,
-                                                )
-                                            }
-                                            className="rounded-full border border-red-400/20 px-4 py-2 text-sm text-red-300 transition hover:border-red-400/40"
-                                        >
-                                            Supprimer
-                                        </button>
-                                    </div>
-                                </div>
-                            ))}
-
-                        {experiences.length === 0 && (
-                            <p className="py-10 text-sm text-white/30">
-                                Aucune expérience renseignée.
-                            </p>
-                        )}
-                    </div>
-                </section>
+                <ExperiencesManager
+                    experiences={experiences}
+                    experienceForm={experienceForm}
+                    editingExperienceId={editingExperienceId}
+                    saving={savingExperience}
+                    onChange={(field, value) =>
+                        setExperienceForm((current) => ({
+                            ...current,
+                            [field]: value,
+                        }))
+                    }
+                    onSubmit={handleExperienceSubmit}
+                    onEdit={handleEditExperience}
+                    onDelete={(id) => void handleDeleteExperience(id)}
+                    onCancel={() => {
+                        setEditingExperienceId(null);
+                        setExperienceForm(emptyExperience);
+                    }}
+                />
             </div>
         </main>
     );

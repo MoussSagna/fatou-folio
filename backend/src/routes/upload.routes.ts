@@ -36,7 +36,7 @@ router.post(
 
       if (!file) {
         res.status(400).json({
-          message: "No image provided",
+          message: "Aucune image fournie.",
         });
 
         return;
@@ -89,7 +89,7 @@ router.post(
         message:
           error instanceof Error
             ? error.message
-            : "Failed to upload image",
+            : "Impossible de téléverser l’image.",
       });
     }
   },
@@ -101,7 +101,7 @@ router.delete("/image", requireAuth, async (req, res) => {
 
     if (typeof publicId !== "string" || !publicId.trim()) {
       res.status(400).json({
-        message: "Invalid publicId",
+        message: "Identifiant public invalide.",
       });
 
       return;
@@ -117,7 +117,7 @@ router.delete("/image", requireAuth, async (req, res) => {
       message:
         error instanceof Error
           ? error.message
-          : "Failed to delete image",
+          : "Impossible de supprimer l’image.",
     });
   }
 });

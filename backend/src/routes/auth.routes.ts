@@ -17,7 +17,7 @@ router.post("/login", async (req, res) => {
       typeof password !== "string"
     ) {
       res.status(400).json({
-        message: "Email and password are required",
+        message: "L’e-mail et le mot de passe sont obligatoires.",
       });
 
       return;
@@ -31,7 +31,7 @@ router.post("/login", async (req, res) => {
 
     if (!user) {
       res.status(401).json({
-        message: "Invalid email or password",
+        message: "E-mail ou mot de passe incorrect.",
       });
 
       return;
@@ -44,7 +44,7 @@ router.post("/login", async (req, res) => {
 
     if (!passwordValid) {
       res.status(401).json({
-        message: "Invalid email or password",
+        message: "E-mail ou mot de passe incorrect.",
       });
 
       return;
@@ -78,7 +78,7 @@ router.post("/login", async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to login",
+      message: "Impossible de se connecter.",
     });
   }
 });
@@ -100,7 +100,7 @@ router.post("/logout", async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to logout",
+      message: "Impossible de se déconnecter.",
     });
   }
 });
@@ -111,7 +111,7 @@ router.get("/me", async (req, res) => {
 
     if (!token) {
       res.status(401).json({
-        message: "Not authenticated",
+        message: "Non authentifié.",
       });
 
       return;
@@ -126,7 +126,7 @@ router.get("/me", async (req, res) => {
 
     if (!session) {
       res.status(401).json({
-        message: "Not authenticated",
+        message: "Non authentifié.",
       });
 
       return;
@@ -138,7 +138,7 @@ router.get("/me", async (req, res) => {
         .delete();
 
       res.status(401).json({
-        message: "Session expired",
+        message: "La session a expiré.",
       });
 
       return;
@@ -154,7 +154,7 @@ router.get("/me", async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to check authentication",
+      message: "Impossible de vérifier l’authentification.",
     });
   }
 });

@@ -27,7 +27,7 @@ router.get("/", async (_req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to fetch skills",
+      message: "Impossible de récupérer les compétences.",
     });
   }
 });
@@ -44,10 +44,15 @@ router.post("/", requireAuth, async (req, res) => {
     if (
       typeof number !== "string" ||
       typeof title !== "string" ||
-      typeof description !== "string"
+      typeof description !== "string" ||
+      !number.trim() ||
+      !title.trim() ||
+      !description.trim() ||
+      (order !== undefined &&
+        (!Number.isInteger(order) || order < 0))
     ) {
       res.status(400).json({
-        message: "Invalid skill data",
+        message: "Les données de la compétence sont invalides.",
       });
 
       return;
@@ -66,7 +71,7 @@ router.post("/", requireAuth, async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to create skill",
+      message: "Impossible de créer la compétence.",
     });
   }
 });
@@ -77,7 +82,7 @@ router.put("/:id", requireAuth, async (req, res) => {
 
     if (!Number.isInteger(id)) {
       res.status(400).json({
-        message: "Invalid skill id",
+        message: "Identifiant de compétence invalide.",
       });
 
       return;
@@ -93,10 +98,15 @@ router.put("/:id", requireAuth, async (req, res) => {
     if (
       typeof number !== "string" ||
       typeof title !== "string" ||
-      typeof description !== "string"
+      typeof description !== "string" ||
+      !number.trim() ||
+      !title.trim() ||
+      !description.trim() ||
+      (order !== undefined &&
+        (!Number.isInteger(order) || order < 0))
     ) {
       res.status(400).json({
-        message: "Invalid skill data",
+        message: "Les données de la compétence sont invalides.",
       });
 
       return;
@@ -113,7 +123,7 @@ router.put("/:id", requireAuth, async (req, res) => {
 
     if (!skill) {
       res.status(404).json({
-        message: "Skill not found",
+        message: "Compétence introuvable.",
       });
 
       return;
@@ -143,7 +153,7 @@ router.put("/:id", requireAuth, async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to update skill",
+      message: "Impossible de mettre à jour la compétence.",
     });
   }
 });
@@ -154,7 +164,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
 
     if (!Number.isInteger(id)) {
       res.status(400).json({
-        message: "Invalid skill id",
+        message: "Identifiant de compétence invalide.",
       });
 
       return;
@@ -171,7 +181,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
 
     if (!skill) {
       res.status(404).json({
-        message: "Skill not found",
+        message: "Compétence introuvable.",
       });
 
       return;
@@ -189,7 +199,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to delete skill",
+      message: "Impossible de supprimer la compétence.",
     });
   }
 });
