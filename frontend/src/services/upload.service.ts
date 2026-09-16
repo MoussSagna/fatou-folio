@@ -35,7 +35,7 @@ export async function uploadImage(
         );
 
         throw new Error(
-            `Unable to upload image (${response.status})`,
+            `Impossible de téléverser l’image (${response.status})`,
         );
     }
 
@@ -73,7 +73,7 @@ export async function deleteImage(
         );
 
         throw new Error(
-            `Unable to delete image (${response.status})`,
+            `Impossible de supprimer l’image (${response.status})`,
         );
     }
 }

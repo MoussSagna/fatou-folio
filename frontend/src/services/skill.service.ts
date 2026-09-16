@@ -13,7 +13,7 @@ export async function getSkills(): Promise<Skill[]> {
     const response = await fetch(`${API_URL}/skills`);
 
     if (!response.ok) {
-        throw new Error("Unable to fetch skills");
+        throw new Error("Impossible de récupérer les compétences.");
     }
 
     return (await response.json()) as Skill[];
@@ -32,7 +32,7 @@ export async function createSkill(
     });
 
     if (!response.ok) {
-        throw new Error("Unable to create skill");
+        throw new Error("Impossible de créer la compétence.");
     }
 
     return (await response.json()) as Skill;
@@ -52,7 +52,7 @@ export async function updateSkill(
     });
 
     if (!response.ok) {
-        throw new Error("Unable to update skill");
+        throw new Error("Impossible de mettre à jour la compétence.");
     }
 
     return (await response.json()) as Skill;
@@ -67,6 +67,6 @@ export async function deleteSkill(
     });
 
     if (!response.ok) {
-        throw new Error("Unable to delete skill");
+        throw new Error("Impossible de supprimer la compétence.");
     }
 }

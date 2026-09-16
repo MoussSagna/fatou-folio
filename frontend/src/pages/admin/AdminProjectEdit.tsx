@@ -3,29 +3,17 @@ import type { ChangeEvent, FormEvent } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { AnimatedLoader } from "../../components";
+import { ProjectImagesEditor } from "../../components/admin/ProjectImagesEditor";
+import { ProjectSectionsEditor } from "../../components/admin/ProjectSectionsEditor";
 import { uploadImage } from "../../services";
+import type { Project } from "../../types/";
 import type {
-    Project,
-    ProjectImage,
-    ProjectSection,
-} from "../../types/";
+    AdminProject,
+    AdminProjectImage,
+    AdminProjectSection,
+} from "../../types/admin-project";
 
 const API_URL = import.meta.env.VITE_API_URL;
-
-interface AdminProjectImage extends Omit<ProjectImage, "id"> {
-    id: string | number;
-}
-
-interface AdminProjectSection extends Omit<ProjectSection, "id"> {
-    id: string | number;
-}
-
-interface AdminProject
-    extends Omit<Project, "id" | "sections" | "images"> {
-    id: string | number;
-    sections: AdminProjectSection[];
-    images: AdminProjectImage[];
-}
 
 const createEmptySection = (
     order: number,
@@ -111,7 +99,7 @@ export default function AdminProjectEdit() {
                     );
 
                     throw new Error(
-                        `Unable to load project (${response.status})`,
+                        `Impossible de charger le projet (${response.status})`,
                     );
                 }
 
@@ -309,7 +297,7 @@ export default function AdminProjectEdit() {
             }));
 
             setSuccess(
-                "Image de couverture uploaded successfully.",
+                "Image de couverture téléversée avec succès.",
             );
         } catch (uploadError) {
             console.error(
@@ -320,7 +308,7 @@ export default function AdminProjectEdit() {
             setError(
                 uploadError instanceof Error
                     ? uploadError.message
-                    : "Unable to upload cover image.",
+                    : "Impossible de téléverser l’image de couverture.",
             );
         } finally {
             setUploadingCover(false);
@@ -368,7 +356,7 @@ export default function AdminProjectEdit() {
             }));
 
             setSuccess(
-                "Galerie image uploaded successfully.",
+                "Image de la galerie téléversée avec succès.",
             );
         } catch (uploadError) {
             console.error(
@@ -379,7 +367,7 @@ export default function AdminProjectEdit() {
             setError(
                 uploadError instanceof Error
                     ? uploadError.message
-                    : "Unable to upload gallery image.",
+                    : "Impossible de téléverser l’image de la galerie.",
             );
         } finally {
             setUploadingImages((current) => {
@@ -517,7 +505,7 @@ export default function AdminProjectEdit() {
                 );
 
                 throw new Error(
-                    `Unable to save project (${response.status})`,
+                    `Impossible d’enregistrer le projet (${response.status})`,
                 );
             }
 
@@ -964,282 +952,24 @@ export default function AdminProjectEdit() {
                         </div>
                     </section>
 
-                    <section>
-                        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                            <div>
-                                <p className="text-xs uppercase tracking-[0.25em] text-white/30">
-                                    04
-                                </p>
+                    <ProjectSectionsEditor
+                        sections={form.sections}
+                        onAdd={addSection}
+                        onRemove={removeSection}
+                        onChange={updateSection}
+                    />
 
-                                <h2 className="mt-2 text-3xl font-medium tracking-tight">
-                                    Étude de cas
-                                </h2>
-                            </div>
-
-                            <button
-                                type="button"
-                                onClick={addSection}
-                                className="w-fit rounded-full border border-white/15 px-5 py-2 text-xs uppercase tracking-[0.15em] text-white/60 transition-colors hover:border-white/40 hover:text-white"
-                            >
-                                + Ajouter section
-                            </button>
-                        </div>
-
-                        <div className="space-y-8">
-                            {form.sections.map(
-                                (section, index) => (
-                                    <article
-                                        key={section.id}
-                                        className="rounded-[2rem] border border-white/10 bg-white/[0.02] p-6 md:p-8"
-                                    >
-                                        <div className="mb-6 flex items-center justify-between">
-                      <span className="text-sm text-white/30">
-                        Section{" "}
-                          {String(index + 1).padStart(
-                              2,
-                              "0",
-                          )}
-                      </span>
-
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    removeSection(index)
-                                                }
-                                                className="text-xs uppercase tracking-[0.15em] text-white/30 hover:text-white"
-                                            >
-                                                Supprimer
-                                            </button>
-                                        </div>
-
-                                        <div className="grid gap-6 md:grid-cols-[120px_1fr]">
-                                            <label className="space-y-2">
-                        <span className="text-xs uppercase tracking-[0.2em] text-white/40">
-                          Numéro
-                        </span>
-
-                                                <input
-                                                    value={section.number}
-                                                    onChange={(event) =>
-                                                        updateSection(
-                                                            index,
-                                                            "number",
-                                                            event.target.value,
-                                                        )
-                                                    }
-                                                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-white/30"
-                                                />
-                                            </label>
-
-                                            <label className="space-y-2">
-                        <span className="text-xs uppercase tracking-[0.2em] text-white/40">
-                          Titre
-                        </span>
-
-                                                <input
-                                                    value={section.title}
-                                                    onChange={(event) =>
-                                                        updateSection(
-                                                            index,
-                                                            "title",
-                                                            event.target.value,
-                                                        )
-                                                    }
-                                                    className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-white/30"
-                                                    placeholder="Recherche et découverte"
-                                                />
-                                            </label>
-                                        </div>
-
-                                        <label className="mt-6 block space-y-2">
-                      <span className="text-xs uppercase tracking-[0.2em] text-white/40">
-                        Contenu
-                      </span>
-
-                                            <textarea
-                                                value={section.content}
-                                                onChange={(event) =>
-                                                    updateSection(
-                                                        index,
-                                                        "content",
-                                                        event.target.value,
-                                                    )
-                                                }
-                                                rows={7}
-                                                className="w-full resize-y rounded-xl border border-white/10 bg-white/5 px-4 py-3 leading-relaxed outline-none focus:border-white/30"
-                                            />
-                                        </label>
-                                    </article>
-                                ),
-                            )}
-                        </div>
-                    </section>
-
-                    <section>
-                        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                            <div>
-                                <p className="text-xs uppercase tracking-[0.25em] text-white/30">
-                                    05
-                                </p>
-
-                                <h2 className="mt-2 text-3xl font-medium tracking-tight">
-                                    Galerie
-                                </h2>
-                            </div>
-
-                            <button
-                                type="button"
-                                onClick={addImage}
-                                className="w-fit rounded-full border border-white/15 px-5 py-2 text-xs uppercase tracking-[0.15em] text-white/60 transition-colors hover:border-white/40 hover:text-white"
-                            >
-                                + Ajouter image
-                            </button>
-                        </div>
-
-                        <div className="space-y-6">
-                            {form.images.map(
-                                (image, index) => {
-                                    const imageId = String(
-                                        image.id,
-                                    );
-
-                                    const isUploading =
-                                        Boolean(
-                                            uploadingImages[
-                                                imageId
-                                                ],
-                                        );
-
-                                    return (
-                                        <article
-                                            key={image.id}
-                                            className="rounded-[2rem] border border-white/10 bg-white/[0.02] p-6"
-                                        >
-                                            <div className="mb-5 flex items-center justify-between">
-                        <span className="text-sm text-white/30">
-                          Image{" "}
-                            {String(
-                                index + 1,
-                            ).padStart(2, "0")}
-                        </span>
-
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        removeImage(
-                                                            index,
-                                                        )
-                                                    }
-                                                    disabled={
-                                                        isUploading
-                                                    }
-                                                    className="text-xs uppercase tracking-[0.15em] text-white/30 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
-                                                >
-                                                    Supprimer
-                                                </button>
-                                            </div>
-
-                                            <div className="grid gap-5 md:grid-cols-2">
-                                                <div className="space-y-3">
-                          <span className="text-xs uppercase tracking-[0.2em] text-white/40">
-                            Image
-                          </span>
-
-                                                    <label
-                                                        className={`flex cursor-pointer items-center justify-center rounded-xl border border-dashed border-white/15 bg-white/5 px-4 py-8 text-center transition-colors hover:border-white/30 hover:bg-white/[0.08] ${
-                                                            isUploading
-                                                                ? "cursor-wait opacity-50"
-                                                                : ""
-                                                        }`}
-                                                    >
-                                                        <input
-                                                            type="file"
-                                                            accept="image/*"
-                                                            className="hidden"
-                                                            disabled={
-                                                                isUploading ||
-                                                                saving
-                                                            }
-                                                            onChange={(
-                                                                event,
-                                                            ) => {
-                                                                void handleGalerieUpload(
-                                                                    event,
-                                                                    index,
-                                                                );
-                                                            }}
-                                                        />
-
-                                                        <div className="flex flex-col items-center gap-2">
-                              <span className="text-xs uppercase tracking-[0.15em] text-white/50">
-                                {isUploading
-                                    ? "Téléchargement..."
-                                    : image.url
-                                        ? "Remplacer l'image"
-                                        : "Choisir une image"}
-                              </span>
-
-                                                            <span className="text-xs text-white/20">
-                                JPG, PNG, WEBP
-                              </span>
-                                                        </div>
-                                                    </label>
-
-                                                    {image.url && (
-                                                        <p className="truncate text-xs text-white/20">
-                                                            {image.url}
-                                                        </p>
-                                                    )}
-                                                </div>
-
-                                                <label className="space-y-2">
-                          <span className="text-xs uppercase tracking-[0.2em] text-white/40">
-                            Texte alternatif
-                          </span>
-
-                                                    <input
-                                                        value={image.alt}
-                                                        onChange={(
-                                                            event,
-                                                        ) =>
-                                                            updateImage(
-                                                                index,
-                                                                "alt",
-                                                                event.target
-                                                                    .value,
-                                                            )
-                                                        }
-                                                        className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 outline-none focus:border-white/30"
-                                                        placeholder="Tableau de bord de la page d’accueil"
-                                                    />
-                                                </label>
-                                            </div>
-
-                                            {image.url && (
-                                                <div className="mt-5 overflow-hidden rounded-2xl bg-white/5">
-                                                    <img
-                                                        src={image.url}
-                                                        alt={
-                                                            image.alt
-                                                        }
-                                                        className="aspect-video w-full object-cover"
-                                                    />
-                                                </div>
-                                            )}
-                                        </article>
-                                    );
-                                },
-                            )}
-
-                            {form.images.length === 0 && (
-                                <div className="rounded-[2rem] border border-dashed border-white/10 py-16 text-center">
-                                    <p className="text-white/30">
-                                        Aucune image dans la galerie.
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-                    </section>
+                    <ProjectImagesEditor
+                        images={form.images}
+                        uploadingImages={uploadingImages}
+                        saving={saving}
+                        onAdd={addImage}
+                        onRemove={removeImage}
+                        onChange={updateImage}
+                        onUpload={(event, index) => {
+                            void handleGalerieUpload(event, index);
+                        }}
+                    />
 
                     <section>
                         <div className="mb-8">

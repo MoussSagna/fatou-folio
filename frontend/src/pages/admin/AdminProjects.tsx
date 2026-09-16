@@ -20,7 +20,7 @@ export default function AdminProjects() {
             });
 
             if (!response.ok) {
-                throw new Error("Unable to load projects");
+                throw new Error("Impossible de charger les projets.");
             }
 
             const data = (await response.json()) as Project[];
@@ -40,7 +40,7 @@ export default function AdminProjects() {
 
     const handleDelete = async (id: number) => {
         const confirmed = window.confirm(
-            "Are you sure you want to delete this project?",
+            "Voulez-vous vraiment supprimer ce projet ?",
         );
 
         if (!confirmed) {
@@ -54,7 +54,7 @@ export default function AdminProjects() {
             });
 
             if (!response.ok) {
-                throw new Error("Unable to delete project");
+                throw new Error("Impossible de supprimer le projet.");
             }
 
             setProjects((current) =>
@@ -75,7 +75,7 @@ export default function AdminProjects() {
                             to="/admin"
                             className="mb-6 inline-flex text-xs uppercase tracking-[0.2em] text-white/40 transition-colors hover:text-white"
                         >
-                            ← Dashboard
+                            ← Tableau de bord
                         </Link>
 
                         <p className="mb-3 text-xs uppercase tracking-[0.3em] text-white/30">
@@ -97,7 +97,7 @@ export default function AdminProjects() {
 
                 {loading && (
                     <div className="py-20">
-                        <p className="text-white/40">Loading projects...</p>
+                        <p className="text-white/40">Chargement des projets...</p>
                     </div>
                 )}
 
@@ -145,7 +145,7 @@ export default function AdminProjects() {
                                 : "bg-white/5 text-white/30"
                         }`}
                     >
-                      {project.published ? "Published" : "Draft"}
+                      {project.published ? "Publié" : "Brouillon"}
                     </span>
 
                                         {project.featured && (
@@ -160,7 +160,7 @@ export default function AdminProjects() {
                                             to={`/admin/projects/${project.id}`}
                                             className="text-xs uppercase tracking-[0.15em] text-white/40 transition-colors hover:text-white"
                                         >
-                                            Edit
+                                            Modifier
                                         </Link>
 
                                         <button
@@ -168,7 +168,7 @@ export default function AdminProjects() {
                                             onClick={() => void handleDelete(project.id)}
                                             className="text-xs uppercase tracking-[0.15em] text-red-300/50 transition-colors hover:text-red-300"
                                         >
-                                            Delete
+                                            Supprimer
                                         </button>
                                     </div>
                                 </article>

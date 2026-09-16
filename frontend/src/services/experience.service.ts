@@ -15,7 +15,7 @@ export async function getExperiences(): Promise<Experience[]> {
     const response = await fetch(`${API_URL}/experiences`);
 
     if (!response.ok) {
-        throw new Error("Unable to fetch experiences");
+        throw new Error("Impossible de récupérer les expériences.");
     }
 
     return (await response.json()) as Experience[];
@@ -34,7 +34,7 @@ export async function createExperience(
     });
 
     if (!response.ok) {
-        throw new Error("Unable to create experience");
+        throw new Error("Impossible de créer l’expérience.");
     }
 
     return (await response.json()) as Experience;
@@ -54,7 +54,7 @@ export async function updateExperience(
     });
 
     if (!response.ok) {
-        throw new Error("Unable to update experience");
+        throw new Error("Impossible de mettre à jour l’expérience.");
     }
 
     return (await response.json()) as Experience;
@@ -69,6 +69,6 @@ export async function deleteExperience(
     });
 
     if (!response.ok) {
-        throw new Error("Unable to delete experience");
+        throw new Error("Impossible de supprimer l’expérience.");
     }
 }

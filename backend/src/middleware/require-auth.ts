@@ -16,7 +16,7 @@ export async function requireAuth(
 
     if (!token) {
       res.status(401).json({
-        message: "Authentication required",
+        message: "Authentification requise.",
       });
 
       return;
@@ -31,7 +31,7 @@ export async function requireAuth(
 
     if (!session) {
       res.status(401).json({
-        message: "Invalid session",
+        message: "Session invalide.",
       });
 
       return;
@@ -43,7 +43,7 @@ export async function requireAuth(
         .delete();
 
       res.status(401).json({
-        message: "Session expired",
+        message: "La session a expiré.",
       });
 
       return;
@@ -56,7 +56,7 @@ export async function requireAuth(
     console.error(error);
 
     res.status(500).json({
-      message: "Failed to authenticate",
+      message: "Impossible de vous authentifier.",
     });
   }
 }

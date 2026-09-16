@@ -66,7 +66,7 @@ export default function AdminLogin() {
                     </p>
 
                     <h1 className="text-5xl font-medium tracking-[-0.05em]">
-                        Hey Gurl
+                        Salut, toi
                     </h1>
                 </div>
 

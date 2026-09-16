@@ -14,5 +14,7 @@ export {
     getExperiences,
     updateExperience,
 } from "./experience.service";
+export type { ExperienceInput } from "./experience.service";
 
+export type { SkillInput } from "./skill.service";
 export { getProjects, getProject, getProjectBySlug, logout, login, getCurrentUser, uploadImage, deleteImage , updateProfile, getProfile};

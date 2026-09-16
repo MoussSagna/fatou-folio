@@ -6,7 +6,7 @@ export async function getProfile(): Promise<Profile> {
     const response = await fetch(`${API_URL}/profile`);
 
     if (!response.ok) {
-        throw new Error("Unable to fetch profile");
+        throw new Error("Impossible de récupérer le profil.");
     }
 
     return (await response.json()) as Profile;
@@ -87,7 +87,7 @@ export async function updateProfile(
         );
 
         throw new Error(
-            `Unable to update profile (${response.status})`,
+            `Impossible de mettre à jour le profil (${response.status})`,
         );
     }
 
