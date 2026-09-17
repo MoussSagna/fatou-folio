@@ -3,6 +3,7 @@ import { Router } from "express";
 import { requireAuth } from "../middleware/require-auth.js";
 import { db } from "../prisma/db.js";
 import { deleteCloudinaryImage } from "../services/cloudinary.service.js";
+import { getPortfolioProfile } from "../services/profile.service.js";
 
 const router = Router();
 
@@ -38,11 +39,7 @@ interface ProfileRequestBody {
 
 router.get("/", async (_req, res) => {
   try {
-    const profiles = await db.orm.public.Profile
-      .where({ id: 1 })
-      .all();
-
-    const profile = profiles[0];
+    const profile = await getPortfolioProfile();
 
     if (!profile) {
       res.json({
@@ -135,11 +132,7 @@ router.put("/", requireAuth, async (req, res) => {
       return;
     }
 
-    const existingProfiles = await db.orm.public.Profile
-      .where({ id: 1 })
-      .all();
-
-    const existingProfile = existingProfiles[0];
+    const existingProfile = await getPortfolioProfile();
 
     const profileData = {
       name: name.trim(),
@@ -184,7 +177,7 @@ router.put("/", requireAuth, async (req, res) => {
         existingProfile.profileImagePublicId;
 
       await db.orm.public.Profile
-        .where({ id: 1 })
+        .where({ id: existingProfile.id })
         .update(profileData);
 
       if (
@@ -204,17 +197,14 @@ router.put("/", requireAuth, async (req, res) => {
       }
     } else {
       await db.orm.public.Profile.create({
-        id: 1,
         ...profileData,
       });
     }
 
-    const profiles = await db.orm.public.Profile
-      .where({ id: 1 })
-      .all();
+    const profile = await getPortfolioProfile();
 
     res.json({
-      ...profiles[0],
+      ...profile,
       skills: [],
     });
   } catch (error) {

@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import { requireAuth } from "../middleware/require-auth.js";
 import { db } from "../prisma/db.js";
+import { getPortfolioProfile } from "../services/profile.service.js";
 
 const router = Router();
 
@@ -16,8 +17,16 @@ interface ExperienceRequestBody {
 
 router.get("/", async (_req, res) => {
   try {
+    const profile = await getPortfolioProfile();
+
+    if (!profile) {
+      res.json([]);
+
+      return;
+    }
+
     const experiences = await db.orm.public.Experience
-      .where({ profileId: 1 })
+      .where({ profileId: profile.id })
       .all();
 
     const sortedExperiences = [...experiences].sort(
@@ -36,6 +45,16 @@ router.get("/", async (_req, res) => {
 
 router.post("/", requireAuth, async (req, res) => {
   try {
+    const profile = await getPortfolioProfile();
+
+    if (!profile) {
+      res.status(409).json({
+        message: "Le profil doit être créé avant d’ajouter une expérience.",
+      });
+
+      return;
+    }
+
     const {
       period,
       company,
@@ -72,7 +91,7 @@ router.post("/", requireAuth, async (req, res) => {
         location: location?.trim() || null,
         description: description.trim(),
         order: order ?? 0,
-        profileId: 1,
+        profileId: profile.id,
       });
 
     res.status(201).json(experience);
@@ -87,6 +106,16 @@ router.post("/", requireAuth, async (req, res) => {
 
 router.put("/:id", requireAuth, async (req, res) => {
   try {
+    const profile = await getPortfolioProfile();
+
+    if (!profile) {
+      res.status(409).json({
+        message: "Le profil doit être créé avant de modifier une expérience.",
+      });
+
+      return;
+    }
+
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id)) {
@@ -129,7 +158,7 @@ router.put("/:id", requireAuth, async (req, res) => {
       await db.orm.public.Experience
         .where({
           id,
-          profileId: 1,
+          profileId: profile.id,
         })
         .all();
 
@@ -146,7 +175,7 @@ router.put("/:id", requireAuth, async (req, res) => {
     await db.orm.public.Experience
       .where({
         id,
-        profileId: 1,
+        profileId: profile.id,
       })
       .update({
         period: period.trim(),
@@ -161,7 +190,7 @@ router.put("/:id", requireAuth, async (req, res) => {
       await db.orm.public.Experience
         .where({
           id,
-          profileId: 1,
+          profileId: profile.id,
         })
         .all();
 
@@ -177,6 +206,16 @@ router.put("/:id", requireAuth, async (req, res) => {
 
 router.delete("/:id", requireAuth, async (req, res) => {
   try {
+    const profile = await getPortfolioProfile();
+
+    if (!profile) {
+      res.status(409).json({
+        message: "Le profil doit être créé avant de supprimer une expérience.",
+      });
+
+      return;
+    }
+
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id)) {
@@ -191,7 +230,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
       await db.orm.public.Experience
         .where({
           id,
-          profileId: 1,
+          profileId: profile.id,
         })
         .all();
 
@@ -208,7 +247,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
     await db.orm.public.Experience
       .where({
         id,
-        profileId: 1,
+        profileId: profile.id,
       })
       .delete();
 

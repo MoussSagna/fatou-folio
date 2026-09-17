@@ -9,6 +9,7 @@ import {
     Footer,
     Navbar,
     Reveal,
+    SelectedWork,
     SkillsSection,
 } from "../../components";
 import { useAuth } from "../../context/AuthContext";
@@ -222,9 +223,15 @@ export default function Home() {
                             </Reveal>
 
                             <Reveal delay={0.2}>
-                                <h1 className="relative z-10 ml-[7vw] text-[18vw] font-medium uppercase leading-[0.72] tracking-[-0.09em] md:text-[15vw]">
-                                    Designer
-                                </h1>
+                                <EditableText
+                                    label="Titre"
+                                    value={profile?.title}
+                                    isEditing={Boolean(user) && isEditing}
+                                    onChange={(value) => updateField("title", value)}
+                                    placeholder="Designer"
+                                    className="relative z-10 ml-[7vw] block text-[18vw] font-medium uppercase leading-[0.72] tracking-[-0.09em] md:text-[15vw]"
+                                    as="h1"
+                                />
                             </Reveal>
 
                             <motion.div
@@ -367,6 +374,7 @@ export default function Home() {
                 isEditing={isEditing}
                 onFieldChange={updateField}
             />
+            <SelectedWork />
             <SkillsSection
                 profile={profile}
                 isEditing={Boolean(user) && isEditing}

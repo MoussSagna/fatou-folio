@@ -487,7 +487,7 @@ export default function AdminProjectEdit() {
                 method,
                 credentials: "include",
                 headers: {
-                    "Contenu-Type": "application/json",
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify(payload),
             });

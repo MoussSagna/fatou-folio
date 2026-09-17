@@ -2,6 +2,7 @@ import { Router } from "express";
 
 import { requireAuth } from "../middleware/require-auth.js";
 import { db } from "../prisma/db.js";
+import { getPortfolioProfile } from "../services/profile.service.js";
 
 const router = Router();
 
@@ -14,8 +15,16 @@ interface SkillRequestBody {
 
 router.get("/", async (_req, res) => {
   try {
+    const profile = await getPortfolioProfile();
+
+    if (!profile) {
+      res.json([]);
+
+      return;
+    }
+
     const skills = await db.orm.public.Skill
-      .where({ profileId: 1 })
+      .where({ profileId: profile.id })
       .all();
 
     const sortedSkills = [...skills].sort(
@@ -34,6 +43,16 @@ router.get("/", async (_req, res) => {
 
 router.post("/", requireAuth, async (req, res) => {
   try {
+    const profile = await getPortfolioProfile();
+
+    if (!profile) {
+      res.status(409).json({
+        message: "Le profil doit être créé avant d’ajouter une compétence.",
+      });
+
+      return;
+    }
+
     const {
       number,
       title,
@@ -63,7 +82,7 @@ router.post("/", requireAuth, async (req, res) => {
       title: title.trim(),
       description: description.trim(),
       order: order ?? 0,
-      profileId: 1,
+      profileId: profile.id,
     });
 
     res.status(201).json(skill);
@@ -78,6 +97,16 @@ router.post("/", requireAuth, async (req, res) => {
 
 router.put("/:id", requireAuth, async (req, res) => {
   try {
+    const profile = await getPortfolioProfile();
+
+    if (!profile) {
+      res.status(409).json({
+        message: "Le profil doit être créé avant de modifier une compétence.",
+      });
+
+      return;
+    }
+
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id)) {
@@ -115,7 +144,7 @@ router.put("/:id", requireAuth, async (req, res) => {
     const skills = await db.orm.public.Skill
       .where({
         id,
-        profileId: 1,
+        profileId: profile.id,
       })
       .all();
 
@@ -132,7 +161,7 @@ router.put("/:id", requireAuth, async (req, res) => {
     await db.orm.public.Skill
       .where({
         id,
-        profileId: 1,
+        profileId: profile.id,
       })
       .update({
         number: number.trim(),
@@ -144,7 +173,7 @@ router.put("/:id", requireAuth, async (req, res) => {
     const updatedSkills = await db.orm.public.Skill
       .where({
         id,
-        profileId: 1,
+        profileId: profile.id,
       })
       .all();
 
@@ -160,6 +189,16 @@ router.put("/:id", requireAuth, async (req, res) => {
 
 router.delete("/:id", requireAuth, async (req, res) => {
   try {
+    const profile = await getPortfolioProfile();
+
+    if (!profile) {
+      res.status(409).json({
+        message: "Le profil doit être créé avant de supprimer une compétence.",
+      });
+
+      return;
+    }
+
     const id = Number(req.params.id);
 
     if (!Number.isInteger(id)) {
@@ -173,7 +212,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
     const skills = await db.orm.public.Skill
       .where({
         id,
-        profileId: 1,
+        profileId: profile.id,
       })
       .all();
 
@@ -190,7 +229,7 @@ router.delete("/:id", requireAuth, async (req, res) => {
     await db.orm.public.Skill
       .where({
         id,
-        profileId: 1,
+        profileId: profile.id,
       })
       .delete();
 
