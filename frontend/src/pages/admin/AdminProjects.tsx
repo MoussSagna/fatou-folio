@@ -79,7 +79,7 @@ export default function AdminProjects() {
                         </Link>
 
                         <p className="mb-3 text-xs uppercase tracking-[0.3em] text-white/30">
-                            Content management
+                            Gestion des projets
                         </p>
 
                         <h1 className="text-5xl font-medium tracking-[-0.05em] md:text-7xl">
@@ -91,7 +91,7 @@ export default function AdminProjects() {
                         to="/admin/projects/new"
                         className="w-fit rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition-opacity hover:opacity-80"
                     >
-                        + New project
+                        + Nouveau projet
                     </Link>
                 </header>
 
@@ -177,7 +177,7 @@ export default function AdminProjects() {
                         {projects.length === 0 && (
                             <div className="border-y border-white/10 py-20">
                                 <p className="text-xl text-white/30">
-                                    No projects yet.
+                                    Aucun projet pour le moment.
                                 </p>
                             </div>
                         )}
